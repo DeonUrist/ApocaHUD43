@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>ApocaHUD</AssemblyName>
-    <RootNamespace>ApocaHUD</RootNamespace>
+    <AssemblyName>ApocaHUD43</AssemblyName>
+    <RootNamespace>ApocaHUD43</RootNamespace>
     <LangVersion>7.3</LangVersion>
     <Nullable>disable</Nullable>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

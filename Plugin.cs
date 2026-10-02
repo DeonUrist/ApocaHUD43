@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-namespace ApocaHUD
+namespace ApocaHUD43
 {
     /// Keeps the game's HUD on the screen edges at any aspect ratio.
     ///
@@ -25,9 +25,9 @@ namespace ApocaHUD
     [BepInPlugin(GUID, NAME, VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        public const string GUID = "com.denis.apocalypter.apocahud";
-        public const string NAME = "ApocaHUD";
-        public const string VERSION = "1.0.1";
+        public const string GUID = "com.denis.apocalypter.apocahud43";
+        public const string NAME = "ApocaHUD43";
+        public const string VERSION = "1.0.2";
 
         internal static ManualLogSource Log;
         internal static ConfigEntry<bool> Enabled;
@@ -48,7 +48,7 @@ namespace ApocaHUD
         internal static void EnsureRunner()
         {
             if (_runnerGo != null) return;
-            _runnerGo = new GameObject("ApocaHUD.Runner");
+            _runnerGo = new GameObject("ApocaHUD43.Runner");
             _runnerGo.hideFlags = HideFlags.HideAndDontSave;
             UnityEngine.Object.DontDestroyOnLoad(_runnerGo);
             _runnerGo.AddComponent<Runner>();

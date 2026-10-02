@@ -4,5 +4,5 @@ M=${MANAGED:-/e/SteamLibrary/steamapps/common/Apocalypter/Apocalypter_Data/Manag
 mcs -nostdlib -noconfig -target:library -langversion:7 -optimize+ -out:${1:-ApocaHUD.dll} \
   -r:$M/mscorlib.dll -r:$M/System.dll -r:$M/System.Core.dll -r:$M/netstandard.dll \
   -r:$B/BepInEx.dll \
-  -r:$M/UnityEngine.dll -r:$M/UnityEngine.CoreModule.dll -r:$M/UnityEngine.UI.dll -r:$M/UnityEngine.UIModule.dll \
+  -r:$M/UnityEngine.dll -r:$M/UnityEngine.CoreModule.dll -r:$M/UnityEngine.UI.dll -r:$M/UnityEngine.UIModule.dll -r:$M/UnityEngine.TextRenderingModule.dll \
   Plugin.cs

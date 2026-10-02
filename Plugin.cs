@@ -27,7 +27,7 @@ namespace ApocaHUD
     {
         public const string GUID = "com.denis.apocalypter.apocahud";
         public const string NAME = "ApocaHUD";
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "1.0.1";
 
         internal static ManualLogSource Log;
         internal static ConfigEntry<bool> Enabled;
@@ -121,6 +121,7 @@ namespace ApocaHUD
             // Frames found in this pass (and earlier ones).
             var frames = new List<KeyValuePair<RectTransform, Vector2>>(_frames);
             foreach (var kv in frames) if (kv.Key != null) changed += Layout(kv.Key, kv.Value);
+            Cover(root, refRes);
             if (!_applied || changed > 0)
                 Plugin.Log.LogInfo((_applied ? "Re-anchored " : "HUD anchored to the screen edges: ") + changed + " element(s) (screen " + Screen.width + "x" + Screen.height + ", canvas " + root.rect.width.ToString("0") + "x" + root.rect.height.ToString("0") + ")");
             _applied = true;
@@ -145,6 +146,21 @@ namespace ApocaHUD
                     Remember(rt);
                     Vector2 framePos = rt.anchoredPosition, size = rt.sizeDelta;
                     Vector2 off = framePos + Vector2.Scale(a - new Vector2(0.5f, 0.5f), frame);   // offset from the parent centre
+                    var lg = rt.GetComponent<LayoutGroup>();
+                    if (lg != null)
+                    {
+                        // A layout group places its rows from its own rect (SurvivalCanvas: LowerLeft, spacing -897, so the
+                        // rows only land right in a 1080-high rect). Keep the 1920x1080 frame as it is and pin it to the
+                        // corner its content is aligned to.
+                        int al = (int)lg.childAlignment;
+                        var ca = new Vector2((al % 3) * 0.5f, 1f - (al / 3) * 0.5f);
+                        Vector3 was = rt.localPosition;
+                        rt.anchorMin = ca; rt.anchorMax = ca;
+                        rt.anchoredPosition = off + Vector2.Scale(new Vector2(0.5f, 0.5f) - ca, frame);
+                        Apocapocket.Moved(rt, rt.localPosition - was);
+                        n++;
+                        continue;
+                    }
                     rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
                     rt.sizeDelta = Vector2.zero;
                     rt.anchoredPosition = off;
@@ -172,6 +188,31 @@ namespace ApocaHUD
                 n++;
             }
             return n;
+        }
+
+        /// Full-screen pictures on the HUD canvas (LoadingScreen: a 1920x1080 RawImage, centred) are sized to COVER the canvas,
+        /// aspect kept, overflow cropped, so no game world shows above/below (4:3) or at the sides (21:9). Their children
+        /// (the "Loading..." text) keep their size and offsets. Re-checked every pass: follows resolution changes.
+        private static void Cover(RectTransform root, Vector2 refRes)
+        {
+            Vector2 canvas = root.rect.size;
+            if (canvas.x <= 0f || canvas.y <= 0f) return;
+            for (int i = 0; i < root.childCount; i++)
+            {
+                var rt = root.GetChild(i) as RectTransform;
+                if (rt == null || _frames.ContainsKey(rt)) continue;
+                Orig o;
+                Vector2 baseSize = _orig.TryGetValue(rt, out o) ? o.Size : rt.sizeDelta;
+                if (Mathf.Abs(baseSize.x - refRes.x) > 2f || Mathf.Abs(baseSize.y - refRes.y) > 2f) continue;
+                if (rt.anchorMin != new Vector2(0.5f, 0.5f) || rt.anchorMax != rt.anchorMin) continue;
+                if (!(rt.GetComponent<Graphic>() is RawImage) && !(rt.GetComponent<Graphic>() is Image)) continue;
+                float s = Mathf.Max(canvas.x / baseSize.x, canvas.y / baseSize.y);
+                var want = baseSize * s;
+                if ((rt.sizeDelta - want).sqrMagnitude < 0.25f) continue;
+                Remember(rt);
+                rt.sizeDelta = want;
+                Plugin.Log.LogInfo(rt.name + " sized to cover the screen: " + want.x.ToString("0") + "x" + want.y.ToString("0"));
+            }
         }
 
         private static bool IsFrame(RectTransform rt, Vector2 frame)

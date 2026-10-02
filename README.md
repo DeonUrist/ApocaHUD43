@@ -10,6 +10,9 @@ ApocaHUD re-anchors each HUD element to the edge or corner it was designed next 
 
 - bottom and top rows stick to the bottom / top edge, corner groups to their corner;
 - the middle of the screen (crosshair, item names, use prompts, scope / binocular overlays) is unchanged;
+- the survival rows (health, hunger, thirst, fatigue, sanity, radiation) stay in the bottom-left corner;
+- the loading screen picture covers the whole screen (aspect kept, edges cropped) instead of leaving the game world
+  visible above and below it;
 - at 16:9 nothing moves;
 - works with [Apocapocket](../Apocapocket)'s extra slot card (4 / 5 / 6) and its moved hints.
 
